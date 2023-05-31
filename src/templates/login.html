@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{url_for('static', path='toastify/src/toastify.css')}}">
+
+<script>
+    function handleRequest(path) {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const body = {username, password};
+        return fetch(path,{
+          method: 'POST',
+          headers: {"content-type": "application/x-www-form-urlencoded"},
+          body: new URLSearchParams(body)
+        } )
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.access_token){
+                  const message = path === '/login' ? 'Login success' : 'Register success';
+                  handlerToastify(message)
+                }else{
+                  handlerToastify('Error')
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                handlerToastify('Error')
+            });
+    }
+
+    function handlerToastify(text){
+      const backgroud = text === 'Error' ? '#EF4444' : '#10B981';
+      Toastify({
+                text,
+                duration: 3000,
+                style: {
+                  background: `${backgroud}`,
+                },
+              }).showToast();
+    }
+
+</script>
+
+<div class="flex">
+<div class="flex-col flex ml-auto mr-auto items-center w-full lg:w-2/3 md:w-3/5">
+<h1 class="font-bold text-2xl my-10 text-white"> Welcome! </h1>
+<form action="" class="mt-2 flex flex-col lg:w-1/2 w-8/12 text-center" onsubmit="return false">
+      <div class="flex flex-wrap items-stretch w-full mb-4 relative h-15 bg-white items-center rounded mb-6 pr-10">
+        <div class="flex -mr-px justify-center w-15 p-4">
+          <span
+            class="flex items-center leading-normal bg-white px-3 border-0 rounded rounded-r-none text-2xl text-gray-600"
+          >
+            <i class="fas fa-user-circle"></i>
+          </span>
+        </div>
+        <input
+          id="username"
+          type="text"
+          class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border-0 h-10 border-grey-light rounded rounded-l-none px-3 self-center relative  font-roboto text-xl outline-none"
+          placeholder="Username"
+        />
+      </div>
+      <div class="flex flex-wrap items-stretch w-full relative h-15 bg-white items-center rounded mb-4">
+        <div class="flex -mr-px justify-center w-15 p-4">
+          <span
+            class="flex items-center leading-normal bg-white rounded rounded-r-none text-xl px-3 whitespace-no-wrap text-gray-600"
+            > 
+            <i class="fas fa-lock"></i>
+              </span
+          >
+        </div>
+        <input
+          id="password"
+          type="password"
+          class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border-0 h-10 px-3 relative self-center font-roboto text-xl outline-none"
+          placeholder="Password"
+        />
+        <div class="flex -mr-px">
+          <span
+            class="flex items-center leading-normal bg-white rounded rounded-l-none border-0 px-3 whitespace-no-wrap text-gray-600"
+            >
+            <i class="fas fa-eye-slash"></i>
+            </span>
+        </div>
+      </div>
+    <div class="text-center">
+        <button onclick="handleRequest('/login')" class="bg-blue-400 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-l">
+          Login
+        </button>
+        <button onclick="handleRequest('/users')" class="bg-blue-400 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-r">
+          Register
+        </button>
+      </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="{{url_for('static', path='toastify/src/toastify.js')}}"></script>
+{% endblock content %}
